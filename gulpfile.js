@@ -1,9 +1,3 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-
 import gulp from 'gulp';
 import browserSync from 'browser-sync';
 import cleancss from 'gulp-clean-css';
@@ -12,32 +6,11 @@ import rename from 'gulp-rename';
 import notify from 'gulp-notify'
 
 import {createGulpEsbuild} from  "gulp-esbuild"
-const gulpEsbuild = createGulpEsbuild({
-    incremental: true, // enables the esbuild's incremental build
-    piping: true,      // enables piping
-})
+const gulpEsbuild = createGulpEsbuild()
 import babel from 'esbuild-plugin-babel'
 
-const esb_config = {
-    outfile: "app.js",
-    bundle: true, // Required for aliases to work
-    minify: false,
-    sourcemap: true,
-    logLevel: "info", // Provides detailed output statistics
-    plugins: [
-    ],
-    // Define aliases
-    alias: {
-        '@p': './src/js/custom-plugin',
-        '@l': './src/js/libs',
-        '@z': './src/js/zayavka',
-        '~': './src',
-        '@': './src/js', // Убедитесь, что тут правильный путь
-        '@s': './src/css',
-    },
-}
 
-const esb_config_PROD = {
+const esb_config = {
     outfile: "scripts.min.js",
     bundle: true,
     minify: true,
@@ -61,9 +34,6 @@ import dartSass from 'sass';
 import gulpSass from 'gulp-sass';
 const sass = gulpSass(dartSass);
 
-// import * as sass from 'sass'
-
-//import webpack from 'webpack-stream';
 import postcss from 'gulp-postcss';
 import autoprefixer from 'autoprefixer';
 
@@ -76,6 +46,7 @@ gulp.task('browser-sync', function () {
         },
         notify: true,
         open: false,
+        port: 3000,
         // online: false, // Work Offline Without Internet Connection
         // tunnel: true, tunnel: "projectname", // Demonstration page: http://projectname.localtunnel.me
     })
@@ -106,15 +77,6 @@ gulp.task('js', () => {
     return gulp
         .src(`src/js/app.js`)
         .pipe(gulpEsbuild(esb_config).on("error", notify.onError(), gulp.parallel('watch')))
-        .pipe(gulp.dest('./src/assets/'))
-        .pipe(browserSync.reload({ stream: true }))
-
-});
-
-gulp.task('js_PROD', () => {
-    return gulp
-        .src(`src/js/app.js`)
-        .pipe(gulpEsbuild(esb_config_PROD))
         .pipe(gulp.dest('./src/assets/'))
         .pipe(browserSync.reload({ stream: true }))
 
