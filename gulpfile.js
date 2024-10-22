@@ -29,10 +29,10 @@ const esb_config = {
     //target: browserslistToEsbuild(), // --> ["chrome79", "edge92", "firefox91", "safari13.1"
 }
 
-
 import dartSass from 'sass';
 import gulpSass from 'gulp-sass';
 const sass = gulpSass(dartSass);
+
 
 import postcss from 'gulp-postcss';
 import autoprefixer from 'autoprefixer';
@@ -52,18 +52,14 @@ gulp.task('browser-sync', function () {
     })
 });
 
-
 gulp.task('styles', function () {
     return gulp.src('src/sass/main.sass')
-        .pipe(sass({ outputStyle: 'expanded' }).on("error", notify.onError()))
-        // .pipe(concat('main.css')) // Если не нужна точка входа sass, а строчку выше удалить
+        .pipe(sass().on('error', notify.onError()))
         .pipe(rename({ suffix: '.min', prefix: '' }))
-        .pipe(cleancss({ level: { 1: { specialComments: 0 } } })) // Opt., comment out when debugging
+        .pipe(cleancss({ level: { 1: { specialComments: 0 } } }))
         .pipe(postcss([autoprefixer()]))
         .pipe(gulp.dest('src/assets'))
-        .pipe(browserSync.stream())
-
-
+        .pipe(browserSync.stream());
 });
 
 
